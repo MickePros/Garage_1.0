@@ -8,5 +8,11 @@ namespace Garage_1._0.Vehicle
 {
     internal class Boat : Vehicle
     {
+        private double length { get; set; }
+
+        public override string Honk()
+        {
+            return "BWAAAA!";
+        }
     }
 }

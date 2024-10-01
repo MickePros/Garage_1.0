@@ -7,6 +7,7 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Garage_1._0.User
 {
@@ -28,10 +29,7 @@ namespace Garage_1._0.User
                     $"\n6: Create new garage and assign capacity." +
                     $"\n7: Exit application.");
 
-                string input = Console.ReadLine();
-                if (!CheckUserInput(input)){
-                    continue;
-                }
+                string input = CheckUserInput();
 
                 switch (input[0])
                 {
@@ -70,18 +68,44 @@ namespace Garage_1._0.User
             } while (keepAlive);
         }
 
-        private static bool CheckUserInput(string input)
+        internal static string CheckUserInput()
         {
-            if (string.IsNullOrEmpty(input))
+            string input = "";
+            bool valid = false;
+            do
             {
-                PrintErrorMessage("Input can not be empty.");
-                return false;
-            }
-            return true;
+                input = Console.ReadLine().ToLower();
+                if (!string.IsNullOrEmpty(input))
+                    return input;
+                PrintErrorMessage("Input can not be empty, try again.");
+            } while (!valid);
+            return input;
         }
 
-        private static void PrintConfirmationMessage( string message ) { Console.WriteLine( message ); }
+        internal static uint AskForNumber() {
+            uint number = 0;
+            bool valid = false;
+            do
+            {
+                valid = uint.TryParse(Console.ReadLine(), out number);
+                if (!valid) PrintErrorMessage("Please input a number 0 or higher");
+            } while (!valid);
+            return number;
+        }
+        internal static double AskForDouble()
+        {
+            double number = 0;
+            bool valid = false;
+            do
+            {
+                valid = double.TryParse(Console.ReadLine(), out number);
+                if (!valid || number < 0) PrintErrorMessage("Please input a number 0.0 or higher");
+            } while (!valid);
+            return number;
+        }
 
-        private static void PrintErrorMessage( string error ) { Console.WriteLine( error ); }
+        public static void PrintConfirmationMessage( string message ) { Console.WriteLine( message ); }
+
+        public static void PrintErrorMessage( string error ) { Console.WriteLine( error ); }
     }
 }

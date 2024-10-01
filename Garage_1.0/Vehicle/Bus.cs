@@ -8,5 +8,11 @@ namespace Garage_1._0.Vehicle
 {
     internal class Bus : Vehicle
     {
+        private uint seats { get; set; }
+
+        public override string Honk()
+        {
+            return "HOOONK!";
+        }
     }
 }

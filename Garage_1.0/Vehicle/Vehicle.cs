@@ -16,6 +16,9 @@ namespace Garage_1._0.Vehicle
         {
             
         }
-
+        public virtual string Honk()
+        {
+            return "Honk honk!";
+        }
     }
 }

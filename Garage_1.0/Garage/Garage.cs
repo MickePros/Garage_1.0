@@ -8,12 +8,15 @@ namespace Garage_1._0.Garage
 {
     internal class Garage<T>
     {
-        //private Vehicle[] vehicle;
+        private Vehicle.Vehicle[] vehicle;
         private int capacity;
 
-        public Garage()
+        public int Capacity { get; set; }
+
+        public Garage(int size)
         {
-            // sätt Vehicle storlek = capacity
+            Capacity = size;
+            vehicle = new Vehicle.Vehicle[capacity];
         }
     }
 }

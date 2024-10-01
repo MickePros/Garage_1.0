@@ -8,5 +8,6 @@ namespace Garage_1._0.Vehicle
 {
     internal class Airplane : Vehicle
     {
+        private uint engines { get; set; }
     }
 }
