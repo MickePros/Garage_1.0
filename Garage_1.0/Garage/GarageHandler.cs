@@ -1,7 +1,9 @@
 ﻿using Garage_1._0.User;
+using Garage_1._0.Vehicle;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,88 +11,72 @@ namespace Garage_1._0.Garage
 {
     internal class GarageHandler : IHandler
     {
-        internal static void AddRemoveVehicle()
-        {
-            bool keepAlive = true;
-            do
-            {
-                Console.WriteLine("Would you like to [ADD] or [REMOVE] a vehicle to/from the garage? Otherwise use [BACK] to return to main menu.");
-                string input = UI.CheckUserInput();
-                switch (input)
-                {
-                    case "add":
-                        Console.Clear();
-                        //Check if garage has space.
-                        Console.WriteLine("Tell me about the vehicle you would like to add.");
-                        Console.Write($"What license number does the {type} have? ");
-                        string license = UI.CheckUserInput().ToUpper();
-                        //Check if already added to garage.
-                        Console.Write("What type of vehicle is it? We accept [CAR], [BUS], [BOAT] or [AIRPLANE]: ");
-                        string type = UI.CheckUserInput();
-                        Console.Write($"What color is the {type}? ");
-                        string color = UI.CheckUserInput();
-                        Console.Write($"How many wheels does the {type} have? ");
-                        uint wheels = UI.AskForNumber();
-                        switch (type)
-                        {
-                            case "car":
-                                Console.Write($"What fuel does the {type} use? example: Petrol, Diesel or Electric. ");
-                                string fuelType = UI.CheckUserInput();
-                                break;
-                            case "bus":
-                                Console.Write($"How many seats does the {type} have? ");
-                                uint seats = UI.AskForNumber();
-                                break;
-                            case "boat":
-                                Console.Write($"How long is the {type}? ");
-                                double length = UI.AskForDouble();
-                                break;
-                            case "airplane":
-                                Console.Write($"How many engines does the {type} have? ");
-                                uint engines = UI.AskForNumber();
-                                break;
-                        }
-                        break;
-                    case "remove":
-                        Console.Clear();
-                        Console.WriteLine("remove");
-                        break;
-                    case "back":
-                        Console.Clear();
-                        keepAlive = false;
-                        Console.WriteLine("back");
-                        break;
-                    default:
-                        Console.Clear();
-                        UI.PrintErrorMessage("Only [ADD], [REMOVE] or [BACK] are accepted inputs.");
-                        break;
-                }
-            } while (keepAlive);
-        }
+        private static Garage.Garage<Vehicle.Vehicle> garage = null!;
 
         internal static void ListVehicles()
         {
-            throw new NotImplementedException();
+            if (garage == null)
+            {
+                User.UI.PrintErrorMessage("You need to create a new garage first.");
+                return;
+            }
+            garage.ListVehicles();
         }
 
         internal static void ListVehicleTypes()
         {
-            throw new NotImplementedException();
+            if (garage == null)
+            {
+                User.UI.PrintErrorMessage("You need to create a new garage first.");
+                return;
+            }
         }
 
-        internal static void NewGarage()
+        internal static void AddVehicle(Vehicle.Vehicle vehicle)
         {
-            throw new NotImplementedException();
+            if (garage == null)
+            {
+                User.UI.PrintErrorMessage("You need to create a new garage first.");
+                return;
+            }
+            garage.AddVehicle(vehicle);
         }
 
-        internal static void SearchByLicense()
+        internal static void NewGarage(uint size)
         {
-            throw new NotImplementedException();
+            garage = new Garage.Garage<Vehicle.Vehicle>(size);
+            User.UI.PrintConfirmationMessage($"New garage created with capacity: {garage.Capacity}");
+        }
+
+        internal static void SearchByLicense(string license)
+        {
+            if (garage == null)
+            {
+                User.UI.PrintErrorMessage("You need to create a new garage first.");
+                return;
+            }
+            if (garage.CheckLicense(license))
+            {
+                User.UI.PrintConfirmationMessage($"Vehicle with license number {license} is currently in the garage.");
+            }
+            else
+            {
+                User.UI.PrintErrorMessage($"No vehicle matching license number {license} could be found in the garage.");
+            }
         }
 
         internal static void SearchByPropery()
         {
-            throw new NotImplementedException();
+            if (garage == null)
+            {
+                User.UI.PrintErrorMessage("You need to create a new garage first.");
+                return;
+            }
+        }
+
+        internal static Car CreateCar(string license, string color, uint wheels, string fuelType)
+        {
+            return new Vehicle.Car(license, color, wheels, fuelType);
         }
     }
 }

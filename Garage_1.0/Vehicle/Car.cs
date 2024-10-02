@@ -8,6 +8,19 @@ namespace Garage_1._0.Vehicle
 {
     internal class Car : Vehicle
     {
-        private int fuelType { get; set; }
+        public string FuelType { get; }
+
+        public Car(string license, string color, uint wheels, string fuelType)
+        {
+            License = license;
+            Color = color;
+            Wheels = wheels;
+            FuelType = fuelType;
+        }
+
+        public override string ToString()
+        {
+            return $"{License} a {GetType().Name} in {Color} with {Wheels} wheels and running on {FuelType}.";
+        }
     }
 }

@@ -8,9 +8,9 @@ namespace Garage_1._0.Vehicle
 {
     internal class Vehicle : IVehicle
     {
-        private string? licensePlate { get; }
-        private string? color { get; }   //Array?
-        private int wheels { get; }
+        public string License { get; internal set; }
+        public string Color { get; internal set; }
+        public uint Wheels { get; internal set; }
 
         public Vehicle()
         {
@@ -19,6 +19,11 @@ namespace Garage_1._0.Vehicle
         public virtual string Honk()
         {
             return "Honk honk!";
+        }
+
+        public override string ToString()
+        {
+            return $"{License} a {GetType().Name} in {Color} with {Wheels} wheels";
         }
     }
 }

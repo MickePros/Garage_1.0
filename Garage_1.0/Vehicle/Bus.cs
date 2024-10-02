@@ -8,7 +8,20 @@ namespace Garage_1._0.Vehicle
 {
     internal class Bus : Vehicle
     {
-        private uint seats { get; set; }
+        public uint Seats { get; }
+
+        public Bus(string license, string color, uint wheels, uint seats)
+        {
+            License = license;
+            Color = color;
+            Wheels = wheels;
+            Seats = seats;
+        }
+
+        public override string ToString()
+        {
+            return $"{License} a {GetType().Name} in {Color} with {Wheels} wheels and {Seats} seats.";
+        }
 
         public override string Honk()
         {
