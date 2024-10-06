@@ -8,26 +8,25 @@ using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Garage_1._0.Garage
 {
     internal class Garage<T> where T : Vehicle.Vehicle
     {
         private Vehicle.Vehicle[] vehicles;
-        private uint nextSlot;
 
         public uint Capacity { get; set; }
 
         public Garage(uint size)
         {
             Capacity = size;
-            nextSlot = 0;
             vehicles = new Vehicle.Vehicle[size];
 
             //Seed
             vehicles[0] = new Vehicle.Car("ABC123", "RED", 4, "GAS");
-            vehicles[1] = new Vehicle.Car("DEF456", "BLUE", 4, "ELECTRIC");
-            vehicles[5] = new Vehicle.Boat("GHI789", "WHITE", 0, 5.5);
+            vehicles[5] = new Vehicle.Car("DEF456", "BLUE", 4, "ELECTRIC");
+            vehicles[1] = new Vehicle.Boat("GHI789", "WHITE", 0, 5.5);
         }
 
         internal IEnumerable<Vehicle.Vehicle> GetVehicles()
@@ -35,20 +34,37 @@ namespace Garage_1._0.Garage
             return vehicles;
         }
 
-        public bool AddVehicle(Vehicle.Vehicle vehicle)
+        public bool AddVehicle(Vehicle.Vehicle addVehicle)
         {
-            if (nextSlot < Capacity)
+            for (int i = 0; i < vehicles.Length; i++)
             {
-                vehicles[nextSlot] = vehicle;
-                nextSlot++;
-                User.UI.PrintConfirmationMessage($"{vehicle.GetType().Name} has been added to the garage");
+                if (vehicles[i] == null)
+                {
+                    vehicles[i] = addVehicle;
+                    User.UI.PrintConfirmationMessage($"{addVehicle.GetType().Name} has been added to the garage.");
+                    return true;
+                }
             }
-            else
-            {
-                User.UI.PrintErrorMessage("Garage is currently full");
-            }
+            User.UI.PrintErrorMessage("Garage is currently full");
+            return false;
+        }
 
-            return true;
+        public bool RemoveVehicle(string license)
+        {
+            for (int i = 0; i < vehicles.Length; i++)
+            {
+                if (vehicles[i] != null)
+                {
+                    if (vehicles[i].License == license)
+                    {
+                        vehicles[i] = null;
+                        User.UI.PrintConfirmationMessage($"{license} has been removed from the garage.");
+                        return true;
+                    }
+                }
+            }
+            User.UI.PrintErrorMessage($"{license} could not be found in the garage.");
+            return false;
         }
 
         public bool CheckLicense(string license)
@@ -56,7 +72,7 @@ namespace Garage_1._0.Garage
             IEnumerable<Vehicle.Vehicle> vehiclesEnumerable = GetVehicles();
             foreach (Vehicle.Vehicle vehicle in vehiclesEnumerable)
             {
-                if (vehicle.License == license)
+                if (vehicle.License == license.ToUpper())
                     return true;
             }
             return false;
@@ -70,6 +86,31 @@ namespace Garage_1._0.Garage
                 if (vehicle != null)
                     Console.WriteLine(vehicle.ToString());
             }
+        }
+
+        public void ListTypes()
+        {
+            string[] types = { "Car", "Bus", "Boat", "Airplane" };
+            foreach (string type in types)
+            {
+                int result = vehicles.Where(v => v != null && v.GetType().Name == type).Count();
+                Console.WriteLine($"Currently there are {result} of the type {type} in the garage");
+            }
+        }
+
+        internal void SearchByProperty(string type, string license, string color, uint wheels)
+        {
+            var result = vehicles.Where(v => v != null
+                && (string.IsNullOrEmpty(type) ? (true) : (v.GetType().Name == type))
+                && (string.IsNullOrEmpty(license) ? (true) : (v.License == license.ToUpper()))
+                && (string.IsNullOrEmpty(color) ? (true) : (v.Color == color.ToUpper()))
+                && (wheels >= 0 ? (true) : (v.Wheels == wheels))
+            );
+            foreach (var item in result)
+            {
+                Console.WriteLine(item);
+            }
+            return;
         }
     }
 }

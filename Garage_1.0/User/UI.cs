@@ -47,12 +47,12 @@ namespace Garage_1._0.User
                         break;
                     case '4':
                         Console.Clear();
-                        GarageHandler.SearchByPropery();
+                        SearchByPropery();
                         break;
                     case '5':
                         Console.Clear();
                         Console.Write($"What license number does the vehicle have? ");
-                        string license = CheckUserInput().ToUpper();
+                        string license = CheckUserInput();
                         GarageHandler.SearchByLicense(license);
                         break;
                     case '6':
@@ -70,11 +70,19 @@ namespace Garage_1._0.User
             } while (keepAlive);
         }
 
+        private static void SearchByPropery()
+        {
+            Console.WriteLine("Search by property values, use this format [TYPE],[LICENSE],[COLOR],[WHEELS] all separated by [,] leave empty if unused example: Car,,Red,4 or Boat,,White,");
+            string input = CheckUserInput();
+            GarageHandler.SearchByPropery(input);
+        }
+
         internal static void AddRemoveVehicle()
         {
             bool keepAlive = true;
             do
             {
+                if (!GarageHandler.GarageExist()) { return; }
                 Console.WriteLine("Would you like to [ADD] or [REMOVE] a vehicle to/from the garage? Otherwise use [BACK] to return to main menu.");
                 string input = CheckUserInput();
                 switch (input)
@@ -85,43 +93,54 @@ namespace Garage_1._0.User
                         Console.WriteLine("Tell me about the vehicle you would like to add.");
                         Console.Write($"What license number does the vehicle have? ");
                         string license = CheckUserInput().ToUpper();
-                        //Check if already added to garage.
+                        if (GarageHandler.CheckLicense(license))
+                        {
+                            PrintErrorMessage($"This license {license} is already in the garage");
+                            break;
+                        }
                         Console.Write("What type of vehicle is it? We accept [CAR], [BUS], [BOAT] or [AIRPLANE]: ");
-                        string type = CheckUserInput();
+                        string type = CheckUserInput().ToUpper();
                         Console.Write($"What color is the {type}? ");
-                        string color = CheckUserInput();
+                        string color = CheckUserInput().ToUpper();
                         Console.Write($"How many wheels does the {type} have? ");
                         uint wheels = AskForNumber();
                         switch (type)
                         {
                             case "car":
                                 Console.Write($"What fuel does the {type} use? example: Petrol, Diesel or Electric. ");
-                                string fuelType = CheckUserInput();
+                                string fuelType = CheckUserInput().ToUpper();
                                 Vehicle.Car car = GarageHandler.CreateCar(license, color, wheels, fuelType);
                                 GarageHandler.AddVehicle(car);
                                 break;
                             case "bus":
                                 Console.Write($"How many seats does the {type} have? ");
                                 uint seats = AskForNumber();
+                                Vehicle.Bus bus = GarageHandler.CreateBus(license, color, wheels, seats);
+                                GarageHandler.AddVehicle(bus);
                                 break;
                             case "boat":
                                 Console.Write($"How long is the {type}? ");
                                 double length = AskForDouble();
+                                Vehicle.Boat boat = GarageHandler.CreateBoat(license, color, wheels, length);
+                                GarageHandler.AddVehicle(boat);
                                 break;
                             case "airplane":
                                 Console.Write($"How many engines does the {type} have? ");
                                 uint engines = AskForNumber();
+                                Vehicle.Airplane plane = GarageHandler.CreateAirplane(license, color, wheels, engines);
+                                GarageHandler.AddVehicle(plane);
                                 break;
                         }
                         break;
                     case "remove":
                         Console.Clear();
-                        Console.WriteLine("remove");
+                        Console.Write($"Input the license of the vehicle leaving the garage. ");
+                        string removeLicense = CheckUserInput().ToUpper();
+                        GarageHandler.RemoveVehicle(removeLicense);
                         break;
                     case "back":
                         Console.Clear();
                         keepAlive = false;
-                        Console.WriteLine("back");
                         break;
                     default:
                         Console.Clear();
@@ -144,12 +163,12 @@ namespace Garage_1._0.User
             bool valid = false;
             do
             {
-                input = Console.ReadLine().ToLower();
+                input = Console.ReadLine();
                 if (!string.IsNullOrEmpty(input))
                     return input;
                 PrintErrorMessage("Input can not be empty, try again.");
             } while (!valid);
-            return input;
+            return input!;
         }
 
         internal static uint AskForNumber() {
